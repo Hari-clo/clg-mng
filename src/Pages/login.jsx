@@ -50,14 +50,24 @@ function Login() {
 
     if (uidValid && passValid) {
       // Retrieve registered users from LocalStorage
-      const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+      let existingUsers = [];
+      try {
+        const parsed = JSON.parse(localStorage.getItem("users"));
+        if (Array.isArray(parsed)) {
+          existingUsers = parsed;
+        }
+      } catch (err) {
+        console.error("Error reading users from localStorage:", err);
+      }
 
       // Check against registered users
       const user = existingUsers.find(
         (u) =>
-          (u.email.toLowerCase() === formData.uid.toLowerCase() ||
-            u.fname.toLowerCase() === formData.uid.toLowerCase()) &&
+          u &&
+          ((u.email && u.email.toLowerCase() === formData.uid.toLowerCase()) ||
+            (u.fname && u.fname.toLowerCase() === formData.uid.toLowerCase())) &&
           u.pass === formData.pass &&
+          u.role &&
           u.role.toLowerCase() === formData.utype.toLowerCase()
       );
 

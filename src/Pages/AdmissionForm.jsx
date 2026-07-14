@@ -70,7 +70,16 @@ function AdmissionForm() {
 
     if (nameValid && dobValid && marksValid && emailValid && phoneValid) {
       // Store application data in local storage as a list
-      const existingApps = JSON.parse(localStorage.getItem("admissionApplications")) || [];
+      let existingApps = [];
+      try {
+        const parsed = JSON.parse(localStorage.getItem("admissionApplications"));
+        if (Array.isArray(parsed)) {
+          existingApps = parsed;
+        }
+      } catch (err) {
+        console.error("Error reading admission applications from localStorage:", err);
+      }
+
       existingApps.push(formData);
       localStorage.setItem("admissionApplications", JSON.stringify(existingApps));
 

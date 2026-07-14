@@ -44,22 +44,23 @@ function Signup() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => {
-      const updated = { ...prev, [name]: value };
+    
+    // Update form data state
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
-      if (name !== "role") {
-        const isValid = validateField(name, value, updated);
-        setErrors((prevErr) => ({ ...prevErr, [name]: !isValid }));
-      }
+    // Prepare updated data reference for synchronous validation
+    const updated = { ...formData, [name]: value };
 
-      // If password changes, re-validate confirm password if it's not empty
-      if (name === "pass" && prev.cpass !== "") {
-        const isCpassValid = validateField("cpass", prev.cpass, updated);
-        setErrors((prevErr) => ({ ...prevErr, cpass: !isCpassValid }));
-      }
+    if (name !== "role") {
+      const isValid = validateField(name, value, updated);
+      setErrors((prevErr) => ({ ...prevErr, [name]: !isValid }));
+    }
 
-      return updated;
-    });
+    // If password changes, re-validate confirm password if it's not empty
+    if (name === "pass" && formData.cpass !== "") {
+      const isCpassValid = validateField("cpass", formData.cpass, updated);
+      setErrors((prevErr) => ({ ...prevErr, cpass: !isCpassValid }));
+    }
   };
 
   const handleSubmit = (e) => {
@@ -82,9 +83,18 @@ function Signup() {
     });
 
     if (validFname && validEmail && validPhone && validDept && validPass && validCpass) {
-      const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+      let existingUsers = [];
+      try {
+        const parsed = JSON.parse(localStorage.getItem("users"));
+        if (Array.isArray(parsed)) {
+          existingUsers = parsed;
+        }
+      } catch (err) {
+        console.error("Error reading users from localStorage:", err);
+      }
+
       const userExists = existingUsers.some(
-        (u) => u.email.toLowerCase() === formData.email.toLowerCase()
+        (u) => u && u.email && u.email.toLowerCase() === formData.email.toLowerCase()
       );
 
       if (userExists) {
