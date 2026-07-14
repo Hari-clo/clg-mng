@@ -69,8 +69,14 @@ function AdmissionForm() {
     });
 
     if (nameValid && dobValid && marksValid && emailValid && phoneValid) {
-      // Store application data in local storage
+      // Store application data in local storage as a list
+      const existingApps = JSON.parse(localStorage.getItem("admissionApplications")) || [];
+      existingApps.push(formData);
+      localStorage.setItem("admissionApplications", JSON.stringify(existingApps));
+
+      // Keep single record for backward compatibility
       localStorage.setItem("admissionApplication", JSON.stringify(formData));
+
       alert("Admission Application Submitted Successfully!");
       console.log("Submitted Admission Data:", formData);
 

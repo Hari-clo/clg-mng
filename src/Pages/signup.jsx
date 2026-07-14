@@ -82,8 +82,22 @@ function Signup() {
     });
 
     if (validFname && validEmail && validPhone && validDept && validPass && validCpass) {
+      const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+      const userExists = existingUsers.some(
+        (u) => u.email.toLowerCase() === formData.email.toLowerCase()
+      );
+
+      if (userExists) {
+        alert("A user with this email is already registered!");
+        setErrors((prevErr) => ({ ...prevErr, email: true }));
+        return;
+      }
+
+      existingUsers.push(formData);
+      localStorage.setItem("users", JSON.stringify(existingUsers));
       alert("Registration Successful!");
       console.log("Registered User details:", formData);
+      handleReset();
     }
   };
 

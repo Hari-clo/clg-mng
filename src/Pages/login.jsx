@@ -49,10 +49,39 @@ function Login() {
     });
 
     if (uidValid && passValid) {
-      // Simulate success login alert
-      alert(`Login Successful as ${formData.utype}!`);
-      console.log("Logged In User details:", formData);
-      // Data could be stored or user redirected to dashboard here
+      // Retrieve registered users from LocalStorage
+      const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+
+      // Check against registered users
+      const user = existingUsers.find(
+        (u) =>
+          (u.email.toLowerCase() === formData.uid.toLowerCase() ||
+            u.fname.toLowerCase() === formData.uid.toLowerCase()) &&
+          u.pass === formData.pass &&
+          u.role.toLowerCase() === formData.utype.toLowerCase()
+      );
+
+      // Check against mock users
+      const isMockUser =
+        (formData.uid.toLowerCase() === "admin" && formData.pass === "admin123" && formData.utype === "Admin") ||
+        (formData.uid.toLowerCase() === "student" && formData.pass === "student123" && formData.utype === "Student") ||
+        (formData.uid.toLowerCase() === "faculty" && formData.pass === "faculty123" && formData.utype === "Faculty");
+
+      if (user || isMockUser) {
+        const sessionUser = user
+          ? { fname: user.fname, email: user.email, role: user.role, dept: user.dept }
+          : { fname: formData.uid, email: `${formData.uid}@dcet.edu`, role: formData.utype, dept: "CSE" };
+
+        localStorage.setItem("currentUser", JSON.stringify(sessionUser));
+        alert(`Login Successful as ${formData.utype}!`);
+        console.log("Logged In User details:", sessionUser);
+      } else {
+        alert("Invalid credentials! Please register first or use correct details.");
+        setErrors({
+          uid: true,
+          pass: true,
+        });
+      }
     }
   };
 
