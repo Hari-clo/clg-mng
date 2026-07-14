@@ -36,3 +36,10 @@
     transform: rotate(360deg);
   }
 }
+
+/* Custom class to change text color to gold on hover */
+.hover-gold:hover {
+  color: #ffc107 !important; /* Bootstrap warning-yellow / gold color */
+  transition: color 0.2s ease-in-out;
+}
+
